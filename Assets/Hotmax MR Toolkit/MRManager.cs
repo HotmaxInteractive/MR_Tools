@@ -31,7 +31,8 @@ public class MRManager : MonoBehaviour
     public GameObject cameraHandle;
     GameObject zedOffset;
 
-    GameObject offsetTools;
+    [HideInInspector]
+    public GameObject offsetTools;
     GameObject offsetMenu;
 
 	[HideInInspector]
