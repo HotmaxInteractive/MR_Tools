@@ -27,7 +27,8 @@ public class MRManager : MonoBehaviour
     GameObject frameCalibrator;
 
     GameObject cameraCalibrator;
-    GameObject cameraHandle;
+    [HideInInspector]
+    public GameObject cameraHandle;
     GameObject zedOffset;
 
     GameObject offsetTools;
