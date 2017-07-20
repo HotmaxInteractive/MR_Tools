@@ -14,6 +14,8 @@ public class SaveFramePos : MonoBehaviour
 
 
     bool calibrationIsOn;
+    //[HideInInspector]
+    public bool offsetsSaved = false;
 
     GameObject frameCalibrator;
     GameObject frameSceneCalibrator;
@@ -42,11 +44,17 @@ public class SaveFramePos : MonoBehaviour
     /// 
     public void doTriggerClicked(object sender, ClickedEventArgs e)
     {
+        
         if (calibrationIsOn)
         {
             frameCalibrator = Resources.Load("FrameCalibrator") as GameObject;
-            Instantiate(frameCalibrator, controller.transform.position, Quaternion.identity, transform.parent );
+            Instantiate(frameCalibrator, controller.transform.position, Quaternion.identity, transform.parent);
             SaveFramePosition();
+            LoadFramePosition();
+            transform.parent.GetComponent<TextureOverlay>().setFrameFOV();
+
+            offsetsSaved = true;
+
         }
     }
 

@@ -64,6 +64,10 @@ public class TextureOverlay : MonoBehaviour
 
     void Start()
     {
+        setFrameFOV();
+    }
+
+    public void setFrameFOV() {
         //Set textures to the shader
         matRGB = canvas.GetComponent<Renderer>().material;
         sl.ZEDCamera zedCamera = sl.ZEDCamera.GetInstance();
@@ -92,9 +96,8 @@ public class TextureOverlay : MonoBehaviour
             scale(canvas.gameObject, mainCamera.fieldOfView, false);
             scale(monitorCanvas.gameObject, monitorCamera.fieldOfView, true);
         }
+
     }
-
-
 
     /// <summary>
     /// Get back the FOV from the Projection matrix, to bypass a round number

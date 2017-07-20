@@ -22,7 +22,8 @@ public class MRManager : MonoBehaviour
 
     Transform hmdModel;
 
-    GameObject monitor;
+    [HideInInspector]
+    public GameObject monitor;
     GameObject zedFrame;
     GameObject frameCalibrator;
 
@@ -50,6 +51,8 @@ public class MRManager : MonoBehaviour
 	string componentRename;
 
     constraintItem[] rbconst = new constraintItem[7];
+    [HideInInspector]
+    public bool constraintSwitched = false;
 
 
     void Start()
@@ -112,7 +115,11 @@ public class MRManager : MonoBehaviour
         {
             zedOffset.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             zedOffset.gameObject.GetComponent<Rigidbody>().constraints &= ~rbconst[button].constraint;
+
         }
+
+        constraintSwitched = true;
+
     }
     public class constraintItem
     {
@@ -185,7 +192,7 @@ public class MRManager : MonoBehaviour
 
 	public void getSteamVRFromResourcesFolder(){
 
-		if(!Directory.Exists("Assets/SteamVR")){
+		if(!Directory.Exists("Assets/Dependencies/SteamVR")){
 			Debug.Log("SteamVR plugin is not in your Assets folder!");
 		}else{
 			steamVRComponents = Resources.Load ("[CameraRig]") as GameObject;
@@ -204,7 +211,7 @@ public class MRManager : MonoBehaviour
 	}
 
 	public void getNVRFromResourcesFolder(){
-		if (!Directory.Exists ("Assets/NewtonVR")) {
+		if (!Directory.Exists ("Assets/Dependencies/NewtonVR")) {
 			Debug.Log("NewtonVR plugin is not in your Assets folder!");
 
 		} else {

@@ -5,28 +5,81 @@ using UnityEngine;
 public class OnboardingUI : MonoBehaviour {
 
     MRManager mrManager;
+    RadialMenuController radMenuController;
     int activePanel = 0;
+    GameObject monitorGlow;
+    GameObject offsetHandleGlow;
+    GameObject frame;
+
+    bool handleGrab = false;
+    bool monitorGrab = false;
+
+    private void Awake()
+    {
+        frame = GameObject.Find("Frame");
+        offsetHandleGlow = GameObject.Find("OffsetHandleGlow");
+        monitorGlow = GameObject.Find("Monitor Case Glow");
+    }
 
     void Start () {
         mrManager = GetComponent<MRManager>();
+        radMenuController = mrManager.calibrationController.GetComponent<RadialMenuController>();
 	}
 
-    public void interactionBegan() {
-        mrManager.cameraHandle.GetComponent<Animator>().enabled = false;
+    public void handleInteractionBegan() {
+        offsetHandleGlow.GetComponent<Animator>().enabled = false;
+        handleGrab = true;
     }
 
-    public void interactionEnd()
+    public void handleInteractionEnd()
     {
-        mrManager.cameraHandle.GetComponent<Animator>().enabled = true;
+        offsetHandleGlow.GetComponent<Animator>().enabled = true;
+        handleGrab = false;
+    }
+
+    public void monitorInteractionBegan()
+    {
+        monitorGlow.GetComponent<Animator>().enabled = false;
+        monitorGrab = true;
+    }
+
+    public void monitorInteractionEnd()
+    {
+        monitorGlow.GetComponent<Animator>().enabled = true;
+        monitorGrab = false;
     }
 
     void Update()
     {
-        if (activePanel == 0 && mrManager.cameraHandle.GetComponent<Animator>().enabled == false)
+        if (activePanel == 0 && handleGrab)
         {
             changePanel();
-            print("activePanel: " + activePanel);
         }
+
+        if (activePanel == 1 && mrManager.constraintSwitched == true)
+        {
+            changePanel();
+            mrManager.constraintSwitched = false;
+            monitorGlow.GetComponent<Animator>().enabled = true;
+        }
+
+        if (activePanel == 2 && monitorGrab)
+        {
+            changePanel();
+        }
+        
+        if(activePanel == 3 && handleGrab)
+        {
+            changePanel();
+        }
+
+        if (activePanel == 4 && frame.GetComponent<SaveFramePos>().offsetsSaved == true)
+        {
+            changePanel();
+            frame.GetComponent<SaveFramePos>().offsetsSaved = false;
+        }
+
+
     }
 
     public void changePanel()
