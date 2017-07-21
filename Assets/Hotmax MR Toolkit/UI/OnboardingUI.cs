@@ -14,7 +14,7 @@ public class OnboardingUI : MonoBehaviour {
     bool handleGrab = false;
     bool monitorGrab = false;
 
-    private void Awake()
+   private void Awake()
     {
         frame = GameObject.Find("Frame");
         offsetHandleGlow = GameObject.Find("OffsetHandleGlow");
@@ -23,39 +23,51 @@ public class OnboardingUI : MonoBehaviour {
 
     void Start () {
         mrManager = GetComponent<MRManager>();
-        radMenuController = mrManager.calibrationController.GetComponent<RadialMenuController>();
-	}
+radMenuController = mrManager.calibrationController.GetComponent<RadialMenuController>();
 
+        monitorGlow.GetComponent<Animator>().enabled = false;
+        offsetHandleGlow.GetComponent<Animator>().enabled = true;
+
+        GameObject.Find("Zed Offset").GetComponent<NewtonVR.NVRInteractableItem>().OnBeginInteraction.AddListener(handleInteractionBegan);
+        GameObject.Find("Zed Offset").GetComponent<NewtonVR.NVRInteractableItem>().OnEndInteraction.AddListener(handleInteractionEnd);
+        GameObject.Find("Actor Monitor").GetComponent<NewtonVR.NVRInteractableItem>().OnBeginInteraction.AddListener(monitorInteractionBegan);
+        GameObject.Find("Actor Monitor").GetComponent<NewtonVR.NVRInteractableItem>().OnEndInteraction.AddListener(monitorInteractionEnd);
+
+    }
+
+    //[SerializeField]
     public void handleInteractionBegan() {
-        offsetHandleGlow.GetComponent<Animator>().enabled = false;
         handleGrab = true;
     }
 
+    //[SerializeField]
     public void handleInteractionEnd()
-    {
-        offsetHandleGlow.GetComponent<Animator>().enabled = true;
+    { 
         handleGrab = false;
     }
 
+    //[SerializeField]
     public void monitorInteractionBegan()
     {
-        monitorGlow.GetComponent<Animator>().enabled = false;
         monitorGrab = true;
     }
 
+    //[SerializeField]
     public void monitorInteractionEnd()
     {
-        monitorGlow.GetComponent<Animator>().enabled = true;
         monitorGrab = false;
     }
 
     void Update()
     {
+        // Grabs the Offset Handle
         if (activePanel == 0 && handleGrab)
         {
+            offsetHandleGlow.GetComponent<Animator>().enabled = false;
             changePanel();
         }
 
+        // Uses the pad controls
         if (activePanel == 1 && mrManager.constraintSwitched == true)
         {
             changePanel();
@@ -63,16 +75,23 @@ public class OnboardingUI : MonoBehaviour {
             monitorGlow.GetComponent<Animator>().enabled = true;
         }
 
+        //grabs the actor monitor
         if (activePanel == 2 && monitorGrab)
         {
             changePanel();
+            monitorGlow.GetComponent<Animator>().enabled = false;
+
+            print("2");
         }
         
+        //Grabs the offset handle again while looking at the monitor
         if(activePanel == 3 && handleGrab)
         {
             changePanel();
+            print("3");
         }
 
+        //Hits trigger to save the offset
         if (activePanel == 4 && frame.GetComponent<SaveFramePos>().offsetsSaved == true)
         {
             changePanel();
@@ -85,7 +104,7 @@ public class OnboardingUI : MonoBehaviour {
     public void changePanel()
     {
 
-            // Iterate through the panels in order once an event
+            // Getting the 
             if (activePanel == mrManager.offsetTools.transform.GetChild(0).transform.childCount - 1)
             {
                 activePanel = 0;
@@ -100,6 +119,7 @@ public class OnboardingUI : MonoBehaviour {
             {
                 mrManager.offsetTools.transform.GetChild(0).transform.GetChild(i).gameObject.SetActive(false);
             }
+
             mrManager.offsetTools.transform.GetChild(0).transform.GetChild(activePanel).gameObject.SetActive(true);
 
     }

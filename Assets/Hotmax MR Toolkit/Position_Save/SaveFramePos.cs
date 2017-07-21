@@ -11,6 +11,7 @@ public class SaveFramePos : MonoBehaviour
     GameObject mrToolkit;
     GameObject controller; //get hand and steamVR tracked controller
     SteamVR_TrackedController controllerInput;
+    public GameObject offsetSavedText;
 
 
     bool calibrationIsOn;
@@ -44,7 +45,7 @@ public class SaveFramePos : MonoBehaviour
     /// 
     public void doTriggerClicked(object sender, ClickedEventArgs e)
     {
-        
+
         if (calibrationIsOn)
         {
             frameCalibrator = Resources.Load("FrameCalibrator") as GameObject;
@@ -55,6 +56,15 @@ public class SaveFramePos : MonoBehaviour
 
             offsetsSaved = true;
 
+            Instantiate(offsetSavedText, controller.transform.position, controller.transform.rotation, controller.transform);
+            Invoke("removeOffsetSavedUI", 1);
+        }
+    }
+
+    void removeOffsetSavedUI() {
+        if (GameObject.Find("OffsetSavedText(Clone)"))
+        {
+            Destroy(GameObject.Find("OffsetSavedText(Clone)"));
         }
     }
 
