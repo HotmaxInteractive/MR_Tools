@@ -143,6 +143,7 @@ public class MRManager : MonoBehaviour
         {
             monitor.SetActive(false);
         }
+        
         if (calibrationToolsOn)
         {
             offsetTools.gameObject.SetActive(true);
