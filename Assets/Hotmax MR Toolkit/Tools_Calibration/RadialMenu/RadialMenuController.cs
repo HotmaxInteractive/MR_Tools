@@ -5,12 +5,13 @@ using UnityEngine;
 public class RadialMenuController : MonoBehaviour
 {
 
+    MRManager _MRManager; //get controller as set on the Manager
+    calibrationBox _calibrationBox; //use public method located in calibration box
+
+    GameObject controller; //reference to the controller itself
     SteamVR_TrackedController controllerInput;
     SteamVR_TrackedObject controllerInput_o;
     SteamVR_Controller.Device device;
-
-    GameObject MRToolkit; //use to grab calibration settings
-    GameObject controller; //get hand and steamVR tracked object and controller components
 
     protected RadialMenu menu;
     private float currentAngle; //Keep track of angle for when we click
@@ -22,19 +23,28 @@ public class RadialMenuController : MonoBehaviour
     {
 
         menu = GetComponent<RadialMenu>();
-        MRToolkit = GameObject.Find("MR Toolkit");
-        controller = MRToolkit.GetComponent<MRManager>().calibrationController;
 
+        _MRManager = GameObject.FindObjectOfType(typeof(MRManager)) as MRManager;
+        _calibrationBox = GameObject.FindObjectOfType(typeof(calibrationBox)) as calibrationBox;
+
+        controller = _MRManager.calibrationController;
         controllerInput = controller.GetComponent<SteamVR_TrackedController>();
         controllerInput_o = controller.GetComponent<SteamVR_TrackedObject>();
 
-        Initialize();
-    }
-    protected virtual void Initialize()
-    {
-        //do nothing
-    }
 
+        if (controllerInput == null)
+        {
+            Debug.LogError("set up the controller input!");
+            return;
+        }
+        else
+        {
+            //NOTE: steamVR event system doesn't work correctly for padTouched on Oculus, so you have to use clicks to rotate
+            controllerInput.PadClicked += DoPadClicked;
+            controllerInput.PadUnclicked += DoPadUnclicked;
+        }
+
+    }
 
     private void Update()
     {
@@ -59,25 +69,7 @@ public class RadialMenuController : MonoBehaviour
     }
 
 
-    protected virtual void OnEnable()
-    {
-        if (controllerInput == null)
-        {
-           // Debug.LogError("set up the controller input!");
-            return;
-        }
-        else
-        {
-            //NOTE: steamVR event system doesn't work correctly for padTouched on Oculus, so you have to use clicks to rotate
-            controllerInput.PadClicked += DoPadClicked;
-            controllerInput.PadUnclicked += DoPadUnclicked;
-
-            Debug.Log("Controller input is set up");
-
-        }
-    }
-
-    protected virtual void OnDisable()
+    protected virtual void OnApplicationQuit()
     {
         controllerInput.PadClicked -= DoPadClicked;
         controllerInput.PadUnclicked -= DoPadUnclicked;
@@ -165,7 +157,7 @@ public class RadialMenuController : MonoBehaviour
 
     public void LogButton(int butt)
     {
-        MRToolkit.GetComponent<MRManager>().SwitchConstraint(butt);
+        _calibrationBox.SwitchConstraint(butt);
     }
 
 }

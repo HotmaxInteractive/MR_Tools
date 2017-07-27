@@ -7,12 +7,16 @@ public class uiButton : MonoBehaviour {
     NewtonVR.NVRButton nvrButton;
     OnboardingUI panelUI;
     public buttonStates btnStates_;
+    posManager savePos;
+
+    [HideInInspector]
+    public bool raycastBtnHit = false;
 
     private void Start()
     {
         nvrButton = GetComponent<NewtonVR.NVRButton>();
         panelUI = GameObject.FindObjectOfType(typeof(OnboardingUI)) as OnboardingUI;
-
+        savePos = GameObject.FindObjectOfType(typeof(posManager)) as posManager;
     }
 
     public enum buttonStates
@@ -26,7 +30,7 @@ public class uiButton : MonoBehaviour {
 
     private void Update()
     {
-        if (nvrButton.ButtonDown)
+        if (raycastBtnHit)
         {
             switch (btnStates_)
             {
@@ -50,7 +54,7 @@ public class uiButton : MonoBehaviour {
                     }
                     break;
                 case buttonStates.saveZedOffset:
-                    print("Saving Zed Offset...");
+                    savePos.SavePos();
                     break;
                 case buttonStates.saveFramePosition:
                     print("Saving Frame Position...");
@@ -58,12 +62,6 @@ public class uiButton : MonoBehaviour {
 
                     }
             }
+        raycastBtnHit = false;
     }
-
-    void switchPanel()
-    {
-        //panelAdd += 1;
-        //panelUI.SendMessage("SET_STAGE_" + panelAdd.ToString());
-    }
-
 }

@@ -4,29 +4,32 @@ using UnityEngine;
 
 public class MonitorPositionToggle : MonoBehaviour
 {
-
-    GameObject mrToolkit;
-    GameObject controller; //get hand and steamVR tracked controller
+    MRManager _MRManager; //get controller as set on the Manager
+    GameObject controller; 
     SteamVR_TrackedController controllerInput;
 
     GameObject cameraOffsetModel;
     bool actorMonitorFollowCamera = false;
-
     Vector3 lastMonitorPosition;
 
     
 
     void Awake()
     {
-        mrToolkit = GameObject.Find("MR Toolkit");
-        cameraOffsetModel = GameObject.Find("Camera Offset Model");
-
-        controller = mrToolkit.GetComponent<MRManager>().calibrationController;
-
+        _MRManager = GameObject.FindObjectOfType(typeof(MRManager)) as MRManager;
+        controller = _MRManager.calibrationController;
         controllerInput = controller.GetComponent<SteamVR_TrackedController>();
+        cameraOffsetModel = GameObject.Find("Zed Offset");
 
         controllerInput.MenuButtonClicked += doMenuButtonClicked;
     }
+
+    protected virtual void OnApplicationQuit()
+    {
+        controllerInput.MenuButtonClicked -= doMenuButtonClicked;
+    }
+
+
 
     public void doMenuButtonClicked(object sender, ClickedEventArgs e)
     {
@@ -44,7 +47,7 @@ public class MonitorPositionToggle : MonoBehaviour
         else
         {
             transform.position = lastMonitorPosition;
-            transform.parent = mrToolkit.transform;
+            transform.parent = _MRManager.transform;
             transform.localScale = transform.localScale * 3;
 
         }

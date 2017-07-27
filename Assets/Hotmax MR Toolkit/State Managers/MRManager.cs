@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.VR;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
@@ -10,7 +9,6 @@ using System.IO;
 
 public class MRManager : MonoBehaviour
 {
-    string vrDevice;
 
     public GameObject calibrationController;
     public Transform trackedObject;
@@ -24,17 +22,11 @@ public class MRManager : MonoBehaviour
 
     [HideInInspector]
     public GameObject monitor;
-    GameObject zedFrame;
-    GameObject frameCalibrator;
 
-    GameObject cameraCalibrator;
-    [HideInInspector]
-    public GameObject cameraHandle;
     GameObject zedOffset;
 
     [HideInInspector]
-    public GameObject offsetTools;
-    GameObject offsetMenu;
+    public GameObject calibrationTools;
 
 	[HideInInspector]
 	public GameObject steamVRComponents;
@@ -50,7 +42,6 @@ public class MRManager : MonoBehaviour
 
 	string componentRename;
 
-    constraintItem[] rbconst = new constraintItem[7];
     [HideInInspector]
     public bool constraintSwitched = false;
 
@@ -58,82 +49,25 @@ public class MRManager : MonoBehaviour
     void Start()
     {
 
-        vrDevice = VRDevice.model;
-
-        if (calibrationController == null)
-        {
-            Debug.Log("<color=red>Callibration controller has to have SteamVR_TrackedController component :</color>");
-        }
-
         hmdModel = GameObject.Find("Head Offset Model").transform;
         head = GameObject.FindGameObjectWithTag("Player").transform.GetChild(0).transform;
-        cameraCalibrator = GameObject.Find("Camera Offset Model");
-        cameraHandle = GameObject.Find("Offset Handle");
         zedOffset = GameObject.Find("Zed Offset");
 
-        offsetTools = GameObject.Find("Offset Tools");
-        offsetMenu = GameObject.Find("Offset Menu");
+
+        calibrationTools = GameObject.Find("Calibration");
         monitor = GameObject.Find("Actor Monitor");
 
-        //parent the radial menu to the hand and change the local values -- values depend on Vive v Oculus
-        offsetMenu.transform.SetParent(calibrationController.transform);
-        if (vrDevice == "Vive. MV")
-        {
-            offsetMenu.transform.localPosition = new Vector3(0f, -0.02f, 0.06f);
-            offsetMenu.transform.localEulerAngles = new Vector3(-130f, 175f, 3.8f);
-        } else
-        {
-            offsetMenu.transform.localPosition = new Vector3(0.008f, 0.008f, -0.03f);
-            offsetMenu.transform.localEulerAngles = new Vector3(-130f, 175f, 3.8f);
-        }
 
-        rbconst[0] = new constraintItem(RigidbodyConstraints.FreezePositionX);
-        rbconst[1] = new constraintItem(RigidbodyConstraints.FreezePositionY);
-        rbconst[2] = new constraintItem(RigidbodyConstraints.FreezePositionZ);
-        rbconst[3] = new constraintItem(RigidbodyConstraints.FreezeRotationZ);
-        rbconst[4] = new constraintItem(RigidbodyConstraints.FreezeRotationY);
-        rbconst[5] = new constraintItem(RigidbodyConstraints.FreezeRotationX);
-        rbconst[6] = new constraintItem(RigidbodyConstraints.None);
-
-
-        //ON START PARENT THE ZEDOFF TO THE TRACKED OBJECT
+        // -- nest the zedOffset into the trackedObject
+        //
         zedOffset.transform.SetParent(trackedObject.transform);
-        //zedOffset.transform.localPosition = new Vector3(0, 0, 0);
 
-
-    }
-
-
-    //gets called publically from the UI
-    public void SwitchConstraint(int button)
-    {
-        if (button == 6)
-        {
-            zedOffset.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-        }
-        else
-        {
-            zedOffset.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            zedOffset.gameObject.GetComponent<Rigidbody>().constraints &= ~rbconst[button].constraint;
-
-        }
-
-        constraintSwitched = true;
-
-    }
-    public class constraintItem
-    {
-        public float trans;
-        public RigidbodyConstraints constraint;
-        public constraintItem(RigidbodyConstraints constraintArg)
-        {
-            constraint = constraintArg;
-        }
     }
 
 
     void Update()
     {
+        //TODO -- move this stateful stuff into their proper contexts
 
         //Turn tools on that you need through editor
         if (monitorOn)
@@ -146,24 +80,17 @@ public class MRManager : MonoBehaviour
         
         if (calibrationToolsOn)
         {
-            offsetTools.gameObject.SetActive(true);
-            zedOffset.GetComponent<BoxCollider>().enabled = true;
-            cameraHandle.SetActive(true);
-            offsetMenu.SetActive(true);
+            calibrationTools.gameObject.SetActive(true);
         } else
         {
-            offsetTools.gameObject.SetActive(false);
-            zedOffset.GetComponent<BoxCollider>().enabled = false;
-            cameraHandle.SetActive(false);
-            offsetMenu.SetActive(false);
+            calibrationTools.gameObject.SetActive(false);
         }
 
         //Calibration models -- staying in line
         hmdModel.position = head.position;
         hmdModel.rotation = head.rotation;
 
-        cameraCalibrator.transform.position = zedOffset.transform.position;
-        cameraCalibrator.transform.rotation = zedOffset.transform.rotation;
+       
 
     }
 

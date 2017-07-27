@@ -1,30 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-public class posManager : MonoBehaviour
+
+public class SaveFramePos : MonoBehaviour
 {
     /// <summary>
     /// pos file name
     /// </summary>
-    private const string pathFilePos = "pos.cfg";
+    private const string pathFilePos = "framePos.cfg";
     GameObject mrToolkit;
     GameObject controller; //get hand and steamVR tracked controller
     SteamVR_TrackedController controllerInput;
-
+    public GameObject offsetSavedText;
+    OnboardingUI panelUI;
 
     bool calibrationIsOn;
+    //[HideInInspector]
+    public bool offsetsSaved = false;
+
+    GameObject frameCalibrator;
+    GameObject frameSceneCalibrator;
 
 
     void Awake()
     {
-        LoadPos();
+        LoadFramePosition();
         mrToolkit = GameObject.Find("MR Toolkit");
 
         controller = mrToolkit.GetComponent<MRManager>().calibrationController;
         controllerInput = controller.GetComponent<SteamVR_TrackedController>();
 
         controllerInput.TriggerClicked += doTriggerClicked;
+        panelUI = GameObject.FindObjectOfType(typeof(OnboardingUI)) as OnboardingUI;
+
     }
 
     void Update()
@@ -38,36 +46,54 @@ public class posManager : MonoBehaviour
     /// 
     public void doTriggerClicked(object sender, ClickedEventArgs e)
     {
-        if (calibrationIsOn)
+
+        if (calibrationIsOn && (int)panelUI.state_ == panelUI.enumLength - 1)
         {
-            SavePos();
+            frameCalibrator = Resources.Load("FrameCalibrator") as GameObject;
+            Instantiate(frameCalibrator, controller.transform.position, Quaternion.identity, transform.parent);
+            SaveFramePosition();
+            LoadFramePosition();
+            transform.parent.GetComponent<TextureOverlay>().setFrameFOV();
+
+            offsetsSaved = true;
+
+            Instantiate(offsetSavedText, controller.transform.position, controller.transform.rotation, controller.transform);
+            Invoke("removeOffsetSavedUI", 1);
+
+     
         }
     }
 
-    public void SavePos()
+    void removeOffsetSavedUI() {
+        if (GameObject.Find("OffsetSavedText(Clone)"))
+        {
+            Destroy(GameObject.Find("OffsetSavedText(Clone)"));
+        }
+    }
+
+    public void SaveFramePosition()
     {
+        frameSceneCalibrator = GameObject.Find("FrameCalibrator(Clone)");
+        frameSceneCalibrator.name = "FrameCalibrator";
+
         using (System.IO.StreamWriter file = new System.IO.StreamWriter(pathFilePos))
         {
-            string tx = "tx=" + transform.localPosition.x.ToString();
-            string ty = "ty=" + transform.localPosition.y.ToString();
-            string tz = "tz=" + transform.localPosition.z.ToString();
-            string rx = "rx=" + transform.localRotation.eulerAngles.x.ToString();
-            string ry = "ry=" + transform.localRotation.eulerAngles.y.ToString();
-            string rz = "rz=" + transform.localRotation.eulerAngles.z.ToString();
+            string tx = "tx=" + frameSceneCalibrator.transform.localPosition.x.ToString();
+            string ty = "ty=" + frameSceneCalibrator.transform.localPosition.y.ToString();
+            string tz = "tz=" + frameSceneCalibrator.transform.localPosition.z.ToString();
+
             file.WriteLine(tx);
             file.WriteLine(ty);
             file.WriteLine(tz);
-            file.WriteLine(rx);
-            file.WriteLine(ry);
-            file.WriteLine(rz);
             file.Close();
         }
+        Destroy(frameSceneCalibrator);
     }
 
     /// <summary>
     /// Load the position from a file
     /// </summary>
-    public void LoadPos()
+    public void LoadFramePosition()
     {
         string[] lines = null;
         try
@@ -79,7 +105,7 @@ public class posManager : MonoBehaviour
         }
         if (lines == null) return;
         Vector3 position = new Vector3(0, 0, 0);
-        Vector3 eulerRotation = new Vector3(0, 0, 0);
+
         foreach (string line in lines)
         {
             string[] splittedLine = line.Split('=');
@@ -99,21 +125,8 @@ public class posManager : MonoBehaviour
                 {
                     position.z = float.Parse(field);
                 }
-                else if (key == "rx")
-                {
-                    eulerRotation.x = float.Parse(field);
-                }
-                else if (key == "ry")
-                {
-                    eulerRotation.y = float.Parse(field);
-                }
-                else if (key == "rz")
-                {
-                    eulerRotation.z = float.Parse(field);
-                }
             }
         }
-        transform.localPosition = position;
-        transform.localRotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, eulerRotation.z);
+        transform.localPosition = new Vector3(0, 0, position.z);
     }
 }
