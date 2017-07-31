@@ -15,9 +15,6 @@ public class MRManager : MonoBehaviour
 	[HideInInspector]
     public Transform head;
 
-    public bool monitorOn;
-    public bool calibrationToolsOn;
-
     Transform hmdModel;
 
     [HideInInspector]
@@ -48,51 +45,18 @@ public class MRManager : MonoBehaviour
 
     void Start()
     {
-
-        hmdModel = GameObject.Find("Head Offset Model").transform;
-        head = GameObject.FindGameObjectWithTag("Player").transform.GetChild(0).transform;
+        //TODO can't reference this stuff if calibration mode is off
         zedOffset = GameObject.Find("Zed Offset");
 
 
         calibrationTools = GameObject.Find("Calibration");
         monitor = GameObject.Find("Actor Monitor");
 
-
-        // -- nest the zedOffset into the trackedObject
-        //
-        zedOffset.transform.SetParent(trackedObject.transform);
-
     }
 
 
     void Update()
-    {
-        //TODO -- move this stateful stuff into their proper contexts
-
-        //Turn tools on that you need through editor
-        if (monitorOn)
-        {
-            monitor.SetActive(true);
-        } else
-        {
-            monitor.SetActive(false);
-        }
-        
-        if (calibrationToolsOn)
-        {
-            calibrationTools.gameObject.SetActive(true);
-        } else
-        {
-            calibrationTools.gameObject.SetActive(false);
-        }
-
-        //Calibration models -- staying in line
-        hmdModel.position = head.position;
-        hmdModel.rotation = head.rotation;
-
-       
-
-    }
+    {    }
 
 
 //------------------------------------------------------------------------------------------------------------

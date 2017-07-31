@@ -7,7 +7,8 @@ using UnityEngine.VR;
 public class calibrationBox : MonoBehaviour {
 
     MRManager _MRManager;
-    GameObject _zedOffset;
+    zedController _zedOffset;
+
     public Transform localZedModel;
 
     GameObject _calibrationController;
@@ -17,9 +18,11 @@ public class calibrationBox : MonoBehaviour {
 
     void Start () {
 		_MRManager = GameObject.FindObjectOfType(typeof(MRManager)) as MRManager;
+        _zedOffset = GameObject.FindObjectOfType(typeof(zedController)) as zedController;
+        print(_zedOffset);
+
         _calibrationController = _MRManager.calibrationController;
         _offsetMenu = GameObject.Find("Offset Lock Menu");
-        _zedOffset = GameObject.Find("Zed Offset");
 
 
         //TODO: make this wait until the Render Model is populated with its components
@@ -36,26 +39,11 @@ public class calibrationBox : MonoBehaviour {
         rbconst[5] = new constraintItem(RigidbodyConstraints.FreezeRotationX);
         rbconst[6] = new constraintItem(RigidbodyConstraints.None);
 
-
-        // -- parent the radial menu to the hand and change the local values -- values depend on Vive v Oculus
-        //
-        if (_calibrationController == null) { Debug.LogError("Calibration controller has to have SteamVR_TrackedController component"); }
-       _offsetMenu.transform.SetParent(_calibrationController.transform);
-       if (VRDevice.model == "Vive. MV")
-       {
-           _offsetMenu.transform.localPosition = new Vector3(0f, -0.02f, 0.06f);
-           _offsetMenu.transform.localEulerAngles = new Vector3(-130f, 175f, 3.8f);
-       }
-       else
-       {
-           _offsetMenu.transform.localPosition = new Vector3(0.008f, 0.008f, -0.03f);
-           _offsetMenu.transform.localEulerAngles = new Vector3(-130f, 175f, 3.8f);
-       }
-       
-
     }
 
     void Update () {
+        //print(localZedModel);
+        //print(_zedOffset);
         //sets zedOffset to equal local transform
         _zedOffset.transform.localPosition = localZedModel.localPosition;
         _zedOffset.transform.localRotation = localZedModel.localRotation;

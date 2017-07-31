@@ -14,7 +14,7 @@ public class SaveFramePos : MonoBehaviour
     public GameObject offsetSavedText;
     OnboardingUI panelUI;
 
-    bool calibrationIsOn;
+    bool calibrationIsOn = true;
     //[HideInInspector]
     public bool offsetsSaved = false;
 
@@ -35,11 +35,7 @@ public class SaveFramePos : MonoBehaviour
 
     }
 
-    void Update()
-    {
-        calibrationIsOn = mrToolkit.GetComponent<MRManager>().calibrationToolsOn;
-
-    }
+    
     /// <summary>
     /// Save the position
     /// </summary>

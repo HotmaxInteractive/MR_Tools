@@ -9,8 +9,8 @@ using System;
 [CustomEditor(typeof(MRManager)), CanEditMultipleObjects] 
 public class MRManagerEditor : Editor
 {
-	private posManager positionManager;
-    private SaveFramePos framePosManager;
+	//private posManager positionManager;
+    //private SaveFramePos framePosManager;
 
 	private MRManager mrManager;
 
@@ -34,8 +34,8 @@ public class MRManagerEditor : Editor
 			loadNVR = true;
 		}
 
-		positionManager = GameObject.Find("Zed Offset").GetComponent<posManager>();
-		headerTexture = Resources.Load<Texture2D>("logo-big");
+		//positionManager = GameObject.Find("Zed Offset").GetComponent<posManager>();
+		headerTexture = Resources.Load<Texture2D>("hotmaxLogo/logo-big");
 		blackBack = new GUIStyle();
 		blackBack.normal.background = MakeTex(4, 4, Color.black);
 		titleColor = new Color(0.12f, 0.16f, 0, 4f);
@@ -105,34 +105,6 @@ public class MRManagerEditor : Editor
 		//------------------------------------------------------------------------------------------------------------------------------------------
 
 		DrawDefaultInspector();
-
-		GUILayout.Space(10);
-
-		//begin save settings
-		EditorGUILayout.Separator();
-		EditorGUILayout.BeginHorizontal();
-		DrawLabel("Camera Offset Settings");
-		EditorGUILayout.EndHorizontal();
-
-		EditorGUILayout.BeginHorizontal();
-		if (GUILayout.Button("Save Camera Offset"))
-		{
-			positionManager.SavePos();
-		}
-		if (GUILayout.Button("Load Camera Offset"))
-		{
-			positionManager.LoadPos();
-		}
-
-		EditorGUILayout.EndHorizontal();
-
-		GUILayout.Space(10);
-
-        if (GUILayout.Button("Set Frame Position")) {
-            framePosManager = GameObject.Find("Frame").GetComponent<SaveFramePos>();
-
-            framePosManager.SaveFramePosition();
-        }
 
 	}
 

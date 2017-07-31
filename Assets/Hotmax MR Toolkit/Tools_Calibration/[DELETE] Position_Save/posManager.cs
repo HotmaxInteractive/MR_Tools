@@ -13,7 +13,7 @@ public class posManager : MonoBehaviour
     SteamVR_TrackedController controllerInput;
 
 
-    bool calibrationIsOn;
+    bool calibrationIsOn = true;
 
 
     void Awake()
@@ -23,12 +23,6 @@ public class posManager : MonoBehaviour
 
         controller = mrToolkit.GetComponent<MRManager>().calibrationController;
         controllerInput = controller.GetComponent<SteamVR_TrackedController>();
-    }
-
-    void Update()
-    {
-        calibrationIsOn = mrToolkit.GetComponent<MRManager>().calibrationToolsOn;
-
     }
 
     public void SavePos()

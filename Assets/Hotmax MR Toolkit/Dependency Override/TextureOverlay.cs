@@ -99,6 +99,13 @@ public class TextureOverlay : MonoBehaviour
 
     }
 
+    //use this if you need to scale the texture on runtime..
+    public void scaleOnRuntime()
+    {
+        scale(canvas.gameObject, mainCamera.fieldOfView, false);
+        scale(monitorCanvas.gameObject, monitorCamera.fieldOfView, true);
+    }
+
     /// <summary>
     /// Get back the FOV from the Projection matrix, to bypass a round number
     /// </summary>
