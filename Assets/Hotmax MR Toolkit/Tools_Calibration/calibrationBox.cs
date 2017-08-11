@@ -42,8 +42,8 @@ public class calibrationBox : MonoBehaviour {
     }
 
     void Update () {
-        //print(localZedModel);
-        //print(_zedOffset);
+        print(localZedModel);
+        print(_zedOffset);
         //sets zedOffset to equal local transform
         _zedOffset.transform.localPosition = localZedModel.localPosition;
         _zedOffset.transform.localRotation = localZedModel.localRotation;
